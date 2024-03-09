@@ -1,25 +1,67 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  render() {
+    // Add your code here
+    return (
+      <div className="app">
+        {/* <Counter /> */}
+        <h1>Classy Weather</h1>
+        <Search />
+        <Loader />
+        <ForcastList />
+      </div>
+    );
+  }
+}
+export default App;
+
+// class Counter extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       count: 0,
+//     };
+//     this.handleDecrement = this.handleDecrement.bind(this);
+//     this.handleIncrement = this.handleIncrement.bind(this);
+//   }
+
+//   handleDecrement() {
+//     this.setState((currentState) => {
+//       return { count: currentState.count - 1 };
+//     });
+//   }
+
+//   handleIncrement() {
+//     this.setState((currentState) => {
+//       return { count: currentState.count + 1 };
+//     });
+//   }
+//   render() {
+//     return (
+//       <React.Fragment>
+//         <button onClick={this.handleDecrement}>-</button>
+//         <span>{this.state.count}</span>
+//         <button onClick={this.handleIncrement}>+</button>
+//       </React.Fragment>
+//     );
+//   }
+// }
+
+class Search extends React.Component {
+  render() {
+    return <input type="search" placeholder="search from location" />;
+  }
 }
 
-export default App;
+class Loader extends React.Component {
+  render() {
+    return <span className="loader">Loading</span>;
+  }
+}
+
+class ForcastList extends React.Component {
+  render() {
+    return <h2> Weather City</h2>;
+  }
+}
