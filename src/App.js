@@ -1,13 +1,13 @@
 import React from "react";
 
 class App extends React.Component {
+  state = {
+    isLoading: false,
+    cityName: "",
+    weather: {},
+  };
   constructor(props) {
     super(props);
-    this.state = {
-      isLoading: false,
-      cityName: "",
-      weather: {},
-    };
     this.getWeather = this.getWeather.bind(this);
     this.convertToFlag = this.convertToFlag.bind(this);
   }
@@ -118,11 +118,12 @@ export default App;
 // }
 
 class Search extends React.Component {
+  state = {
+    query: "",
+  };
   constructor(props) {
     super(props);
-    this.state = {
-      query: "",
-    };
+
     this.handleChange = this.handleChange.bind(this);
   }
 
