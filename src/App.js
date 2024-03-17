@@ -2,7 +2,7 @@ import React from "react";
 
 class App extends React.Component {
   state = {
-    isLoading: false,
+    isLoading: true,
     cityName: "",
     weather: {},
   };
@@ -20,16 +20,21 @@ class App extends React.Component {
     return String.fromCodePoint(...codePoints);
   }
   async getWeather(location) {
+    if (location.length < 2) {
+      this.setState({ cityName: "", weather: {} });
+      return;
+    }
     try {
       this.setState({
         isLoading: true,
       });
+      const controller = new AbortController().signal;
       // 1) Getting location (geocoding)
       const geoRes = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${location}`
+        `https://geocoding-api.open-meteo.com/v1/search?name=${location}`,
+        { signal: controller }
       );
       const geoData = await geoRes.json();
-      console.log(geoData);
 
       if (!geoData.results) throw new Error("Location not found");
 
@@ -45,15 +50,6 @@ class App extends React.Component {
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&timezone=${timezone}&daily=weathercode,temperature_2m_max,temperature_2m_min`
       );
       const weatherData = await weatherRes.json();
-      console.log(weatherData.daily);
-      for (let i = 0; i < 7; i++) {
-        const test = {};
-        for (const key of Object.keys(weatherData.daily)) {
-          test[key] = weatherData.daily[key][i];
-          // console.log(weatherData.daily[key][i]);
-        }
-        console.log(test);
-      }
       this.setState({
         weather: weatherData.daily,
       });
@@ -64,6 +60,11 @@ class App extends React.Component {
         isLoading: false,
       });
     }
+  }
+
+  componentDidMount() {
+    // this.getWeather()
+    this.setState({ isLoading: false });
   }
 
   render() {
@@ -131,22 +132,26 @@ class Search extends React.Component {
     this.setState({ query: newQuery });
   }
 
+  componentDidMount() {
+    if (localStorage.getItem("location"))
+      this.setState({ query: localStorage.getItem("location") });
+  }
+
+  componentDidUpdate(previousProps, previousState) {
+    if (this.state.query !== previousState.query) {
+      localStorage.setItem("location", this.state.query);
+      this.props.getWeather(this.state.query);
+    }
+  }
+
   render() {
     return (
-      <React.Fragment>
-        <input
-          type="search"
-          placeholder="Search from location..."
-          value={this.state.query}
-          onChange={(e) => this.handleChange(e.target.value)}
-          // onChange={(e) => this.props.getWeather(e.target.value)}
-        />
-        {!this.props.cityName && (
-          <button onClick={() => this.props.getWeather(this.state.query)}>
-            Search
-          </button>
-        )}
-      </React.Fragment>
+      <input
+        type="search"
+        placeholder="Search from location..."
+        value={this.state.query}
+        onChange={(e) => this.handleChange(e.target.value)}
+      />
     );
   }
 }
@@ -158,6 +163,9 @@ class Loader extends React.Component {
 }
 
 class ForcastList extends React.Component {
+  componentWillUnmount() {
+    console.log("Weather is unmounting");
+  }
   render() {
     const {
       temperature_2m_max: max,
